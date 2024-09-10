@@ -31,8 +31,6 @@ contract ImKeyNFTContract is
     mapping(uint256 tokenId => mapping(uint256 privilegeId => address to)) public tokenPrivilegeAddress;
     mapping(address to => mapping(uint256 privilegeId => uint256[] tokenIds)) public addressPrivilegedUsedToken;
 
-    event UpdatePrivilegeIds(uint256 indexed privilegeId, bool indexed status);
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
