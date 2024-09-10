@@ -7,12 +7,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../interfaces/IERC7766.sol";
+import "../interfaces/IERC7765.sol";
 
 contract ImKeyNFTContract is
     Initializable,
     ERC721Upgradeable,
-    IERC7766,
+    IERC7765,
     OwnableUpgradeable,
     UUPSUpgradeable
 {
