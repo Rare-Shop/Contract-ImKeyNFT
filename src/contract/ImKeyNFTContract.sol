@@ -19,18 +19,17 @@ contract ImKeyNFTContract is
     string private _defaultURI;
 
     uint256 private _nextTokenId;
-    uint256 public totalSupply;
-    uint256 public constant maxSupply = 100;
 
-    IERC20 public usdtToken;
+    address public usdtToken;
+    address public usdcToken;
     uint256 public mintPrice;
 
-    uint256[] private privilegeIdsArr;
+    uint256[] public privilegeIdsArr;
     mapping(uint256 privilegeId => bool) public privilegeIdStatus;
 
-    mapping(address => bool) public whitelist;
     mapping(uint256 => bool) public tokenPrivilegeUsed;
-    mapping(uint256 tokenId => mapping(uint256 privilegeId => address to)) tokenPrivilegeAddress;
+    mapping(uint256 tokenId => mapping(uint256 privilegeId => address to)) public tokenPrivilegeAddress;
+    mapping(address to => mapping(uint256 privilegeId => uint256[] tokenIds)) public addressPrivilegedUsedToken;
 
     event UpdatePrivilegeIds(uint256 indexed privilegeId, bool indexed status);
 
@@ -42,62 +41,50 @@ contract ImKeyNFTContract is
     function initialize(
         address initialOwner,
         address _usdtToken,
+        address _usdcToken,
         uint256 _mintPrice
     ) external initializer {
-        __ERC721_init("xxx", "xxx");
+        __ERC721_init("imKey Pro RWA NFT", "IKPRN");
         __Ownable_init(initialOwner);
         __UUPSUpgradeable_init();
 
-        usdtToken = IERC20(_usdtToken);
+        usdtToken = _usdtToken;
+        usdcToken = _usdcToken;
         mintPrice = _mintPrice;
         privilegeIdsArr = [1];
         privilegeIdStatus[1] = true;
     }
 
-    function updatePrivilegeIds(
-        uint256 privilegeId,
-        bool status
-    ) external onlyOwner {
-        require(contains(privilegeId), "Invalid privilegeId");
-
-        privilegeIdStatus[privilegeId] = status;
-        emit UpdatePrivilegeIds(privilegeId, status);
+    function withdrawUSD(address payTokenAddress) external onlyOwner {
+        IERC20 erc20Token = IERC20(payTokenAddress);
+        uint256 contractBalance = erc20Token.balanceOf(address(this));
+        require(contractBalance > 0, "No USD to withdraw");
+        erc20Token.transfer(owner(), contractBalance);
     }
 
-    function withdrawUSDT() external onlyOwner {
-        uint256 contractBalance = usdtToken.balanceOf(address(this));
-        require(contractBalance > 0, "No USDT to withdraw");
-        usdtToken.transfer(owner(), contractBalance);
-    }
-
-    function mint() external {
+    function mint(address payTokenAddress) external {
         address sender = _msgSender();
         require(
-            whitelist[sender],
-            "Invalid: one address can only mint one token"
+            payTokenAddress == usdtToken || payTokenAddress == usdcToken,
+            "Only support USDT/USDC"
         );
-        require(totalSupply < maxSupply, "Exceed The MaxSupply Limit");
-
+        IERC20 erc20Token = IERC20(payTokenAddress);
         require(
-            usdtToken.balanceOf(sender) >= mintPrice,
-            "Insufficient USDT balance"
+            erc20Token.balanceOf(sender) >= mintPrice,
+            "Insufficient USD balance"
         );
         require(
-            usdtToken.allowance(sender, address(this)) >= mintPrice,
-            "Allowance not set for USDT"
+            erc20Token.allowance(sender, address(this)) >= mintPrice,
+            "Allowance not set for USD"
         );
 
-        bool success = usdtToken.transferFrom(sender, address(this), mintPrice);
-        require(success, "USDT transfer failed");
+        bool success = erc20Token.transferFrom(
+            sender,
+            address(this),
+            mintPrice
+        );
+        require(success, "USD transfer failed");
         _mint(sender, ++_nextTokenId);
-
-        ++totalSupply;
-    }
-
-    function addWhiteList(address[] calldata addressList) external onlyOwner {
-        for (uint i = 0; i < addressList.length; i++) {
-            whitelist[addressList[i]] = true;
-        }
     }
 
     function exercisePrivilege(
@@ -112,6 +99,7 @@ contract ImKeyNFTContract is
             _to == _ownerOf(_tokenId),
             "Invalid address: _to must be owner of _tokenId"
         );
+        require(privilegeIdsArrContains(_privilegeId), "Invalid _privilegeId");
         require(_data.length == 0, "_data must be null");
         require(privilegeIdStatus[_privilegeId], "_privilegeId status error");
         require(
@@ -121,6 +109,7 @@ contract ImKeyNFTContract is
 
         tokenPrivilegeUsed[_tokenId] = true;
         tokenPrivilegeAddress[_tokenId][_privilegeId] = _to;
+        addressPrivilegedUsedToken[_to][_privilegeId].push(_tokenId);
 
         emit PrivilegeExercised(_to, _to, _tokenId, _privilegeId);
     }
@@ -191,7 +180,7 @@ contract ImKeyNFTContract is
         require(_msgSender() == _from, "Invalid address: _from must be sender");
         require(
             _from == ownerOf(_tokenId),
-            "Invalid address: _from must be owner if _tokenId"
+            "Invalid address: _from must be owner of _tokenId"
         );
         super.transferFrom(_from, _to, _tokenId);
     }
@@ -200,19 +189,13 @@ contract ImKeyNFTContract is
         address newImplementation
     ) internal override onlyOwner {}
 
-    function contains(uint256 privilegeId) internal view returns (bool) {
+    function privilegeIdsArrContains(
+        uint256 privilegeId
+    ) internal view returns (bool) {
         for (uint256 i = 0; i < privilegeIdsArr.length; i++) {
             if (privilegeIdsArr[i] == privilegeId) {
                 return true;
             }
-        }
-        return false;
-    }
-
-    function addPrivilegeId(uint256 privilegeId) internal returns (bool) {
-        if (!contains(privilegeId)) {
-            privilegeIdsArr.push(privilegeId);
-            return true;
         }
         return false;
     }

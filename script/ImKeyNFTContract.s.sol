@@ -13,13 +13,14 @@ contract SBTNFTContractNFTUUPS is Script {
 
         address owner = vm.envAddress("OWNER");
         address usdtToken = vm.envAddress("USDT_TOKEN");
+        address usdcToken = vm.envAddress("USDC_TOKEN");
         uint256 mintPrice = vm.envUint("MINT_PRICE");
 
         address uupsProxy = Upgrades.deployUUPSProxy(
             "ImKeyNFTContract.sol",
             abi.encodeCall(
                 ImKeyNFTContract.initialize,
-                (owner, usdtToken, mintPrice)
+                (owner, usdtToken,usdcToken, mintPrice)
             )
         );
 
