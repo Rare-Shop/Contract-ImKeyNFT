@@ -74,8 +74,8 @@ contract ImKeyNFTContract is
             "Only support USDT/USDC"
         );
         require(
-            amounts > 0 && amounts <= 1000,
-            "One times max limit mint 1000"
+            amounts > 0 && amounts <= 10000,
+            "One times max limit mint 10000"
         );
         IERC20 erc20Token = IERC20(payTokenAddress);
         uint256 payPrice = MINT_PRICE * amounts;
