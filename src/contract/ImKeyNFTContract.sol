@@ -26,16 +26,16 @@ contract ImKeyNFTContract is
 
     uint256 private _nextTokenId;
 
-    address internal constant _moneyAddress =
+    address public constant USD_WITHDRAWL_ADDRESS =
         0xC0f068774D46ba26013677b179934Efd7bdefA3F;
-    address internal constant _usdtToken =
+    address public constant USDT_ADDRESS =
         0xED85184DC4BECf731358B2C63DE971856623e056;
-    address internal constant _usdcToken =
+    address public constant USDC_ADDRESS =
         0xBAfC2b82E53555ae74E1972f3F25D8a0Fc4C3682;
 
-    uint256 public constant mintPrice = 60 * 10 ** 6;
+    uint256 public constant MINT_PRICE = 60 * 10 ** 6;
 
-    uint256 public constant privilegeId = 1;
+    uint256 public constant PRIVILEGE_ID = 1;
 
     mapping(uint256 tokenId => address to) public tokenPrivilegeAddress;
     mapping(address to => uint256[] tokenIds) public addressPrivilegedUsedToken;
@@ -52,29 +52,33 @@ contract ImKeyNFTContract is
     }
 
     modifier checkPrivilegeId(uint256 _privilegeId) {
-        require(_privilegeId == privilegeId, "Invalid _privilegeId");
+        require(_privilegeId == PRIVILEGE_ID, "Invalid _privilegeId");
         _;
     }
     function withdrawUSD(address payTokenAddress) external onlyOwner {
         require(
-            payTokenAddress == _usdtToken || payTokenAddress == _usdcToken,
+            payTokenAddress == USDT_ADDRESS || payTokenAddress == USDC_ADDRESS,
             "Only support USDT/USDC"
         );
         IERC20 erc20Token = IERC20(payTokenAddress);
         uint256 contractBalance = erc20Token.balanceOf(address(this));
         require(contractBalance > 0, "No USD to withdraw");
 
-        erc20Token.safeTransfer(_moneyAddress, contractBalance);
+        erc20Token.safeTransfer(USD_WITHDRAWL_ADDRESS, contractBalance);
     }
 
     function mint(address payTokenAddress, uint256 amounts) external {
         address sender = _msgSender();
         require(
-            payTokenAddress == _usdtToken || payTokenAddress == _usdcToken,
+            payTokenAddress == USDT_ADDRESS || payTokenAddress == USDC_ADDRESS,
             "Only support USDT/USDC"
         );
+        require(
+            amounts > 0 && amounts <= 1000,
+            "One times max limit mint 1000"
+        );
         IERC20 erc20Token = IERC20(payTokenAddress);
-        uint256 payPrice = mintPrice * amounts;
+        uint256 payPrice = MINT_PRICE * amounts;
         require(
             erc20Token.balanceOf(sender) >= payPrice,
             "Insufficient USD balance"
@@ -105,7 +109,10 @@ contract ImKeyNFTContract is
         address tokenOwner = _ownerOf(_tokenId);
         address sender = _msgSender();
 
-        require(sender == tokenOwner, "Invalid address: sender must be owner of tokenID");
+        require(
+            sender == tokenOwner,
+            "Invalid address: sender must be owner of tokenID"
+        );
         require(
             _to == tokenOwner,
             "Invalid address: _to must be owner of _tokenId"
@@ -163,7 +170,7 @@ contract ImKeyNFTContract is
     ) external view returns (uint256[] memory privilegeIds) {
         _requireOwned(_tokenId);
         uint256[] memory output = new uint256[](1);
-        output[0] = privilegeId;
+        output[0] = PRIVILEGE_ID;
         return output;
     }
 

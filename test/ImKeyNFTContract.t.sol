@@ -84,7 +84,7 @@ contract TestImKeyNFTContractt is Test {
         // vm.prank(OWNER_ADDRESS);
 
         //Local test
-        // testSetConstantAddress_local();
+        testSetConstantAddress_local();
 
         vm.startPrank(OWNER_ADDRESS);
 
@@ -103,7 +103,7 @@ contract TestImKeyNFTContractt is Test {
             ownerBalance1_usdcToken
         );
 
-        assertEq(instance.mintPrice(), mintPrice);
+        assertEq(instance.MINT_PRICE(), mintPrice);
 
         vm.stopPrank();
 
