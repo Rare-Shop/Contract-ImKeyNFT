@@ -141,12 +141,10 @@ contract ImKeyNFTContract is
         returns (bool _exercisable)
     {
         _requireOwned(_tokenId);
-        require(
-            _to == _ownerOf(_tokenId),
-            "Invalid address: _to must be owner of _tokenId"
-        );
 
-        return tokenPrivilegeAddress[_tokenId] == address(0);
+        return
+            _to == _ownerOf(_tokenId) &&
+            tokenPrivilegeAddress[_tokenId] == address(0);
     }
 
     function isExercised(
