@@ -13,12 +13,10 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
 
     constructor(
         string memory _defaultName,
-        string memory _description,
-        string memory _defaultImageURI
+        string memory _description
     ) Ownable(_msgSender()) {
         name = _defaultName;
         description = _description;
-        imageURI = _defaultImageURI;
     }
 
     function tokenURI(
