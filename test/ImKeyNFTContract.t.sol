@@ -15,6 +15,8 @@ contract TestImKeyNFTContractt is Test {
         0x3De70dA882f101b4b3d5f3393c7f90e00E64edB9;
 
     address constant SOME_ADDRESS = 0xC0f068774D46ba26013677b179934Efd7bdefA3F;
+    address constant MULTIPLE_SIGNATURE_ADDRESS =
+        0xC0f068774D46ba26013677b179934Efd7bdefA3F;
 
     address constant OWNER_ADDRESS = 0xC565FC29F6df239Fe3848dB82656F2502286E97d;
     address constant SINGER_ADDRESS =
@@ -131,8 +133,10 @@ contract TestImKeyNFTContractt is Test {
         console.log("senderBalance_usdcToken  -> %s", senderBalance_usdcToken);
 
         console.log("approve");
-        IERC20(_usdtToken).approve(address(instance), mintPrice);
-        IERC20(_usdcToken).approve(address(instance), mintPrice);
+        // IERC20(_usdtToken).approve(address(instance), mintPrice);
+        // IERC20(_usdcToken).approve(address(instance), mintPrice);
+        IERC20(_usdtToken).approve(MULTIPLE_SIGNATURE_ADDRESS, mintPrice);
+        IERC20(_usdcToken).approve(MULTIPLE_SIGNATURE_ADDRESS, mintPrice);
 
         console.log("balanceOf _usdtToken");
         instance.mint(address(_usdtToken), 1);
@@ -170,42 +174,42 @@ contract TestImKeyNFTContractt is Test {
         }
         vm.stopPrank();
 
-        console.log("-------withdrawUSD-------");
+        // console.log("-------withdrawUSD-------");
 
-        vm.startPrank(OWNER_ADDRESS);
+        // vm.startPrank(OWNER_ADDRESS);
 
-        uint256 ownerBalance2_usdtToken = IERC20(_usdtToken).balanceOf(
-            OWNER_ADDRESS
-        );
-        console.log("ownerBalance2_usdtToken -> %s", ownerBalance2_usdtToken);
+        // uint256 ownerBalance2_usdtToken = IERC20(_usdtToken).balanceOf(
+        //     OWNER_ADDRESS
+        // );
+        // console.log("ownerBalance2_usdtToken -> %s", ownerBalance2_usdtToken);
 
-        instance.withdrawUSD(address(_usdtToken));
+        // instance.withdrawUSD(address(_usdtToken));
 
-        uint256 ownerBalance3_usdtToken = IERC20(_usdtToken).balanceOf(
-            OWNER_ADDRESS
-        );
-        console.log("ownerBalance3_usdtToken -> %s", ownerBalance3_usdtToken);
+        // uint256 ownerBalance3_usdtToken = IERC20(_usdtToken).balanceOf(
+        //     OWNER_ADDRESS
+        // );
+        // console.log("ownerBalance3_usdtToken -> %s", ownerBalance3_usdtToken);
 
-        uint256 ownerBalance2_usdcToken = IERC20(_usdcToken).balanceOf(
-            OWNER_ADDRESS
-        );
-        console.log("ownerBalance2_usdcToken -> %s", ownerBalance2_usdcToken);
+        // uint256 ownerBalance2_usdcToken = IERC20(_usdcToken).balanceOf(
+        //     OWNER_ADDRESS
+        // );
+        // console.log("ownerBalance2_usdcToken -> %s", ownerBalance2_usdcToken);
 
-        instance.withdrawUSD(address(_usdcToken));
+        // instance.withdrawUSD(address(_usdcToken));
 
-        uint256 ownerBalance3_usdcToken = IERC20(_usdcToken).balanceOf(
-            OWNER_ADDRESS
-        );
-        console.log("ownerBalance3_usdcToken -> %s", ownerBalance3_usdcToken);
+        // uint256 ownerBalance3_usdcToken = IERC20(_usdcToken).balanceOf(
+        //     OWNER_ADDRESS
+        // );
+        // console.log("ownerBalance3_usdcToken -> %s", ownerBalance3_usdcToken);
 
-        uint256 some_address_usdcToken = IERC20(_usdcToken).balanceOf(
-            SOME_ADDRESS
-        );
-        console.log("some_address_usdcToken -> %s", some_address_usdcToken);
-        uint256 some_address_usdtToken = IERC20(_usdtToken).balanceOf(
-            SOME_ADDRESS
-        );
-        console.log("some_address_usdtToken -> %s", some_address_usdtToken);
-        vm.stopPrank();
+        // uint256 some_address_usdcToken = IERC20(_usdcToken).balanceOf(
+        //     SOME_ADDRESS
+        // );
+        // console.log("some_address_usdcToken -> %s", some_address_usdcToken);
+        // uint256 some_address_usdtToken = IERC20(_usdtToken).balanceOf(
+        //     SOME_ADDRESS
+        // );
+        // console.log("some_address_usdtToken -> %s", some_address_usdtToken);
+        // vm.stopPrank();
     }
 }

@@ -26,7 +26,7 @@ contract ImKeyNFTContract is
 
     uint256 private _nextTokenId;
 
-    address public constant USD_WITHDRAWL_ADDRESS =
+    address public constant MULTIPLE_SIGNATURE_ADDRESS =
         0xC0f068774D46ba26013677b179934Efd7bdefA3F;
     address public constant USDT_ADDRESS =
         0xED85184DC4BECf731358B2C63DE971856623e056;
@@ -55,17 +55,6 @@ contract ImKeyNFTContract is
         require(_privilegeId == PRIVILEGE_ID, "Invalid _privilegeId");
         _;
     }
-    function withdrawUSD(address payTokenAddress) external onlyOwner {
-        require(
-            payTokenAddress == USDT_ADDRESS || payTokenAddress == USDC_ADDRESS,
-            "Only support USDT/USDC"
-        );
-        IERC20 erc20Token = IERC20(payTokenAddress);
-        uint256 contractBalance = erc20Token.balanceOf(address(this));
-        require(contractBalance > 0, "No USD to withdraw");
-
-        erc20Token.safeTransfer(USD_WITHDRAWL_ADDRESS, contractBalance);
-    }
 
     function mint(address payTokenAddress, uint256 amounts) external {
         address sender = _msgSender();
@@ -84,11 +73,11 @@ contract ImKeyNFTContract is
             "Insufficient USD balance"
         );
         require(
-            erc20Token.allowance(sender, address(this)) >= payPrice,
+            erc20Token.allowance(sender, MULTIPLE_SIGNATURE_ADDRESS) >= payPrice,
             "Allowance not set for USD"
         );
 
-        erc20Token.safeTransferFrom(sender, address(this), payPrice);
+        erc20Token.safeTransferFrom(sender, MULTIPLE_SIGNATURE_ADDRESS, payPrice);
 
         for (uint256 i = 0; i < amounts; ) {
             _mint(sender, ++_nextTokenId);
