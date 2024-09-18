@@ -26,7 +26,7 @@ contract ImKeyNFTContract is
 
     uint256 private _nextTokenId;
 
-    address public constant MULTIPLE_SIGNATURE_ADDRESS =
+    address public constant PAYMENT_RECEIPIENT_ADDRESS =
         0xC0f068774D46ba26013677b179934Efd7bdefA3F;
     address public constant USDT_ADDRESS =
         0xED85184DC4BECf731358B2C63DE971856623e056;
@@ -73,11 +73,15 @@ contract ImKeyNFTContract is
             "Insufficient USD balance"
         );
         require(
-            erc20Token.allowance(sender, MULTIPLE_SIGNATURE_ADDRESS) >= payPrice,
+            erc20Token.allowance(sender, address(this)) >= payPrice,
             "Allowance not set for USD"
         );
 
-        erc20Token.safeTransferFrom(sender, MULTIPLE_SIGNATURE_ADDRESS, payPrice);
+        erc20Token.safeTransferFrom(
+            sender,
+            PAYMENT_RECEIPIENT_ADDRESS,
+            payPrice
+        );
 
         for (uint256 i = 0; i < amounts; ) {
             _mint(sender, ++_nextTokenId);
@@ -137,7 +141,7 @@ contract ImKeyNFTContract is
     }
 
     function isExercised(
-        address,
+        address _to,
         uint256 _tokenId,
         uint256 _privilegeId
     )
@@ -149,7 +153,9 @@ contract ImKeyNFTContract is
     {
         _requireOwned(_tokenId);
 
-        return tokenPrivilegeAddress[_tokenId] != address(0);
+        return
+            tokenPrivilegeAddress[_tokenId] != address(0) &&
+            tokenPrivilegeAddress[_tokenId] == _to;
     }
 
     function getPrivilegeIds(
