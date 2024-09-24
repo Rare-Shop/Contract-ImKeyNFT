@@ -162,12 +162,13 @@ contract ImKeyNFTContract is
         uint256 _tokenId
     ) external view returns (uint256[] memory privilegeIds) {
         _requireOwned(_tokenId);
+        privilegeIds = new uint256[](1);
         privilegeIds[0] = PRIVILEGE_ID;
         return privilegeIds;
     }
 
     function setMetadataRenderer(address _metadataRenderer) external onlyOwner {
-        require(_msgSender() != address(0), "Invalid address");
+        require(_metadataRenderer != address(0), "Invalid address");
         metadataRenderer = _metadataRenderer;
     }
     function tokenURI(
@@ -180,7 +181,7 @@ contract ImKeyNFTContract is
     function setPrivilegeMetadataRenderer(
         address _privilegeMetadataRenderer
     ) external onlyOwner {
-        require(_msgSender() != address(0), "Invalid address");
+        require(_privilegeMetadataRenderer != address(0), "Invalid address");
         privilegeMetadataRenderer = _privilegeMetadataRenderer;
     }
 
