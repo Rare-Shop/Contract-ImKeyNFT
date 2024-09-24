@@ -164,7 +164,6 @@ contract ImKeyNFTContract is
         _requireOwned(_tokenId);
         privilegeIds = new uint256[](1);
         privilegeIds[0] = PRIVILEGE_ID;
-        return privilegeIds;
     }
 
     function setMetadataRenderer(address _metadataRenderer) external onlyOwner {
