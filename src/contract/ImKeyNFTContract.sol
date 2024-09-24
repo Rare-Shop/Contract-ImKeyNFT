@@ -28,6 +28,8 @@ contract ImKeyNFTContract is
 
     address public constant PAYMENT_RECEIPIENT_ADDRESS =
         0xC0f068774D46ba26013677b179934Efd7bdefA3F;
+    address public constant POSTAGE_RECEIPIENT_ADDRESS =
+        0xC0f068774D46ba26013677b179934Efd7bdefA3F;
     address public constant USDT_ADDRESS =
         0xED85184DC4BECf731358B2C63DE971856623e056;
     address public constant USDC_ADDRESS =
@@ -39,6 +41,7 @@ contract ImKeyNFTContract is
 
     mapping(uint256 tokenId => address to) public tokenPrivilegeAddress;
     mapping(address to => uint256[] tokenIds) public addressPrivilegedUsedToken;
+    mapping(address tokenId => uint256 postage) public postageMessage;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -95,12 +98,17 @@ contract ImKeyNFTContract is
         address _to,
         uint256 _tokenId,
         uint256 _privilegeId,
-        bytes calldata
+        bytes calldata _data
     ) external override checkPrivilegeId(_privilegeId) {
         _requireOwned(_tokenId);
 
         address tokenOwner = _ownerOf(_tokenId);
         address sender = _msgSender();
+        (address payTokenAddress, uint256 postage) = abi.decode(
+            _data,
+            (address, uint256)
+        );
+        IERC20 erc20Token = IERC20(payTokenAddress);
 
         require(
             sender == tokenOwner,
@@ -115,6 +123,20 @@ contract ImKeyNFTContract is
             tokenPrivilegeAddress[_tokenId] == address(0),
             "The tokenID has been exercised"
         );
+
+        require(
+            payTokenAddress == USDT_ADDRESS || payTokenAddress == USDC_ADDRESS,
+            "Only support USDT/USDC"
+        );
+
+        if (postage > 0) {
+            erc20Token.safeTransferFrom(
+                sender,
+                POSTAGE_RECEIPIENT_ADDRESS,
+                postage
+            );
+            postageMessage[_tokenId] = postage;
+        }
 
         tokenPrivilegeAddress[_tokenId] = _to;
         addressPrivilegedUsedToken[_to].push(_tokenId);
