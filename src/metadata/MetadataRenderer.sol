@@ -62,7 +62,7 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
                     url,
                     '",',
                     '"privilegeUsed": "',
-                    privilegeUsed,
+                    privilegeUsed ? "true" : "false",
                     '"}'
                 )
             );
