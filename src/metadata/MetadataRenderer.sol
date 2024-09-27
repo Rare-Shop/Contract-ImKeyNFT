@@ -60,6 +60,9 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
                     '",',
                     '"image": "',
                     url,
+                    '",',
+                    '"privilegeUsed": "',
+                    privilegeUsed,
                     '"}'
                 )
             );
@@ -72,7 +75,9 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
     function setImageUri(string calldata _newURI) external onlyOwner {
         imageURI = _newURI;
     }
-     function setPrivilegeUsedimageURI(string calldata _newPrivilegeUsedimageURI) external onlyOwner {
+    function setPrivilegeUsedimageURI(
+        string calldata _newPrivilegeUsedimageURI
+    ) external onlyOwner {
         privilegeUsedimageURI = _newPrivilegeUsedimageURI;
     }
 
