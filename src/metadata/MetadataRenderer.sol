@@ -5,11 +5,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "../interfaces/IMetadataRenderer.sol";
+import "../contract/ImKeyNFTContract.sol";
 
 contract MetadataRenderer is IMetadataRenderer, Ownable {
     string private imageURI;
     string private name;
     string private description;
+
+    ImKeyNFTContract imKeyNFTContract;
 
     constructor(
         string memory _defaultName,
@@ -32,6 +35,7 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
     }
 
     function tokenURIJSON(uint256 tokenID) public view returns (string memory) {
+        require(address(imKeyNFTContract) != address(0), "MetadataRenderer: Contract instance is not set");
         return
             string(
                 abi.encodePacked(
@@ -46,6 +50,9 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
                     '",',
                     '"image": "',
                     imageURI,
+                    '",',
+                    '"privilegeUsed": "',
+                    imKeyNFTContract.tokenPrivilegeUsed(tokenID),
                     '"}'
                 )
             );
@@ -61,5 +68,10 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
 
     function setDescription(string calldata _description) external onlyOwner {
         description = _description;
+    }
+    function setTmKeyNFTContract(
+        address _imKeyNFTContractAddress
+    ) external onlyOwner {
+        imKeyNFTContract = ImKeyNFTContract(_imKeyNFTContractAddress);
     }
 }

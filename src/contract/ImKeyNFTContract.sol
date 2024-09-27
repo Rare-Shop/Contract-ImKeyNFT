@@ -35,10 +35,11 @@ contract ImKeyNFTContract is
     address public constant USDC_ADDRESS =
         0xBAfC2b82E53555ae74E1972f3F25D8a0Fc4C3682;
 
-    uint256 public constant MINT_PRICE = 60 * 10 ** 6;
+    uint256 public constant MINT_PRICE = 139 * 10 ** 6;
 
     uint256 public constant PRIVILEGE_ID = 1;
 
+    mapping(uint256 tokenId => bool used) public tokenPrivilegeUsed;
     mapping(uint256 tokenId => address to) public tokenPrivilegeAddress;
     mapping(address to => uint256[] tokenIds) public addressPrivilegedUsedToken;
     mapping(uint256 tokenId => uint256 postage) public postageMessage;
@@ -140,6 +141,7 @@ contract ImKeyNFTContract is
 
         tokenPrivilegeAddress[_tokenId] = _to;
         addressPrivilegedUsedToken[_to].push(_tokenId);
+        tokenPrivilegeUsed[_tokenId] = true;
 
         emit PrivilegeExercised(sender, _to, _tokenId, _privilegeId);
     }
