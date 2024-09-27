@@ -39,7 +39,6 @@ contract ImKeyNFTContract is
 
     uint256 public constant PRIVILEGE_ID = 1;
 
-    mapping(uint256 tokenId => bool used) public tokenPrivilegeUsed;
     mapping(uint256 tokenId => address to) public tokenPrivilegeAddress;
     mapping(address to => uint256[] tokenIds) public addressPrivilegedUsedToken;
     mapping(uint256 tokenId => uint256 postage) public postageMessage;
@@ -141,7 +140,6 @@ contract ImKeyNFTContract is
 
         tokenPrivilegeAddress[_tokenId] = _to;
         addressPrivilegedUsedToken[_to].push(_tokenId);
-        tokenPrivilegeUsed[_tokenId] = true;
 
         emit PrivilegeExercised(sender, _to, _tokenId, _privilegeId);
     }
@@ -181,6 +179,22 @@ contract ImKeyNFTContract is
             tokenPrivilegeAddress[_tokenId] != address(0) &&
             tokenPrivilegeAddress[_tokenId] == _to;
     }
+
+    function hasBeenExercised(
+        uint256 _tokenId,
+        uint256 _privilegeId
+    )
+        external
+        view
+        checkPrivilegeId(_privilegeId)
+        returns (bool _exercised)
+    {
+        _requireOwned(_tokenId);
+
+        return
+            tokenPrivilegeAddress[_tokenId] != address(0);
+    }
+
 
     function getPrivilegeIds(
         uint256 _tokenId

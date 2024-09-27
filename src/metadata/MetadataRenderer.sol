@@ -9,6 +9,7 @@ import "../contract/ImKeyNFTContract.sol";
 
 contract MetadataRenderer is IMetadataRenderer, Ownable {
     string private imageURI;
+    string private privilegeUsedimageURI;
     string private name;
     string private description;
 
@@ -35,7 +36,16 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
     }
 
     function tokenURIJSON(uint256 tokenID) public view returns (string memory) {
-        require(address(imKeyNFTContract) != address(0), "MetadataRenderer: Contract instance is not set");
+        require(
+            address(imKeyNFTContract) != address(0),
+            "MetadataRenderer: Contract instance is not set"
+        );
+        bool privilegeUsed = imKeyNFTContract.hasBeenExercised(
+            tokenID,
+            imKeyNFTContract.PRIVILEGE_ID()
+        );
+
+        string memory url = privilegeUsed ? privilegeUsedimageURI : imageURI;
         return
             string(
                 abi.encodePacked(
@@ -49,10 +59,7 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
                     description,
                     '",',
                     '"image": "',
-                    imageURI,
-                    '",',
-                    '"privilegeUsed": "',
-                    imKeyNFTContract.tokenPrivilegeUsed(tokenID),
+                    url,
                     '"}'
                 )
             );
