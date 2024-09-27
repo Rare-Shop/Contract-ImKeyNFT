@@ -72,6 +72,9 @@ contract MetadataRenderer is IMetadataRenderer, Ownable {
     function setImageUri(string calldata _newURI) external onlyOwner {
         imageURI = _newURI;
     }
+     function setPrivilegeUsedimageURI(string calldata _newPrivilegeUsedimageURI) external onlyOwner {
+        privilegeUsedimageURI = _newPrivilegeUsedimageURI;
+    }
 
     function setDescription(string calldata _description) external onlyOwner {
         description = _description;
