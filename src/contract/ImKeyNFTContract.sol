@@ -8,14 +8,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "../interfaces/IERC7765.sol";
 import "../interfaces/IERC7765Metadata.sol";
 import "../interfaces/IMetadataRenderer.sol";
 
 contract ImKeyNFTContract is
     Initializable,
-    ERC165,
     ERC721Upgradeable,
     IERC7765,
     IERC7765Metadata,
@@ -234,11 +232,13 @@ contract ImKeyNFTContract is
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ERC165, ERC721Upgradeable) returns (bool) {
+    ) public view override returns (bool) {
         return
             interfaceId == type(IERC7765).interfaceId ||
+            interfaceId == type(IERC7765Metadata).interfaceId ||
             super.supportsInterface(interfaceId);
     }
+
 
     function _authorizeUpgrade(
         address newImplementation

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "../interfaces/IERC7765Metadata.sol";
 
-contract ERC7765Metadata is IERC7765Metadata, Ownable {
+contract ImkeyERC7765Metadata is IERC7765Metadata, Ownable {
     string private name;
     string private description;
 
